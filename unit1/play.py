@@ -8,6 +8,8 @@
     右上  ：横軸 θ、縦軸 f(θ)。縦線が今の θ（0〜2π に折り返した位置）
     右下  ：θ を 2π で折り返さずに描いた時系列。横の点線は 2π の倍数
     下    ：a・D・dt のスライダー、「noise」のチェック（外すと D = 0）、reset ボタン
+            a は右の欄に数を打ち込んで Enter でも決められる（0.999 など、指で合わせにくい値のため）
+            speed：一コマで進める模型の時間。window：右下に見せる模型の時間の幅
 
 一ステップの更新は  θ ← θ + f(θ, ω, a)·dt + noise_step(D, dt, rng)  だけ。
 f と noise_step は既定では model.py のものを使う。run(f=..., noise_step=...) で差し替えられる。
@@ -21,7 +23,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from matplotlib.ticker import FuncFormatter, MultipleLocator
-from matplotlib.widgets import Button, CheckButtons, Slider
+from matplotlib.widgets import Button, CheckButtons, Slider, TextBox
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 import config  # noqa: E402
@@ -83,6 +85,14 @@ class Player:
     def dt(self):
         return 10.0 ** self.s_logdt.val
 
+    @property
+    def sim_per_frame(self):
+        return 10.0 ** self.s_logspeed.val
+
+    @property
+    def window(self):
+        return 10.0 ** self.s_logwin.val
+
     def step(self):
         """一ステップ。f と noise_step を呼ぶだけ。"""
         dt = self.dt
@@ -91,13 +101,18 @@ class Player:
         self.t += dt
 
     def advance_frame(self):
-        """一コマ分（模型の時間 SIM_TIME_PER_FRAME）進める。dt が大きいと何コマかに一回だけ進む。"""
-        self.t_target += config.SIM_TIME_PER_FRAME
-        moved = False
+        """一コマ分（模型の時間 speed）進める。dt が大きいと何コマかに一回だけ進む。"""
+        self.t_target += self.sim_per_frame
+        # 時系列に残す点は一コマあたり POINTS_PER_FRAME 個ほどに間引く
+        stride = max(1, int(self.sim_per_frame / self.dt / config.POINTS_PER_FRAME))
+        n = 0
         while self.t + self.dt <= self.t_target + 1e-12:
             self.step()
-            moved = True
-        if moved:
+            n += 1
+            if n % stride == 0:
+                self.hist_t.append(self.t)
+                self.hist_theta.append(self.theta)
+        if n % stride:
             self.hist_t.append(self.t)
             self.hist_theta.append(self.theta)
         self._redraw()
@@ -107,7 +122,7 @@ class Player:
     def _build_figure(self):
         fig = plt.figure(figsize=(12, 7.5))
         self.fig = fig
-        gs = fig.add_gridspec(2, 2, left=0.05, right=0.97, top=0.95, bottom=0.27,
+        gs = fig.add_gridspec(2, 2, left=0.05, right=0.97, top=0.95, bottom=0.36,
                               width_ratios=[1, 1.4], hspace=0.35, wspace=0.18)
 
         # 左：円
@@ -150,21 +165,37 @@ class Player:
         self.ax_t = ax_t
 
         # スライダーなど
-        self.s_a = Slider(fig.add_axes([0.10, 0.17, 0.55, 0.03]), "a",
-                          config.A_MIN, config.A_MAX, valinit=config.A_INIT)
-        self.s_logD = Slider(fig.add_axes([0.10, 0.11, 0.55, 0.03]), "log10 D",
-                             config.LOG10_D_MIN, config.LOG10_D_MAX, valinit=config.LOG10_D_INIT)
-        self.s_logdt = Slider(fig.add_axes([0.10, 0.05, 0.55, 0.03]), "log10 dt",
-                              np.log10(config.DT_MIN), np.log10(config.DT_MAX),
-                              valinit=np.log10(config.DT_INIT))
-        self.chk_noise = CheckButtons(fig.add_axes([0.74, 0.10, 0.09, 0.08]),
+        def slider(row, label, lo, hi, init, fmt=None):
+            ax = fig.add_axes([0.12, 0.26 - 0.055 * row, 0.53, 0.03])
+            return Slider(ax, label, lo, hi, valinit=init, valfmt=fmt)
+
+        self.s_a = slider(0, "a", config.A_MIN, config.A_MAX, config.A_INIT, "%.4f")
+        self.s_logD = slider(1, "log10 D", config.LOG10_D_MIN, config.LOG10_D_MAX,
+                             config.LOG10_D_INIT)
+        self.s_logdt = slider(2, "log10 dt", np.log10(config.DT_MIN), np.log10(config.DT_MAX),
+                              np.log10(config.DT_INIT))
+        self.s_logspeed = slider(3, "log10 speed", np.log10(config.SPEED_MIN),
+                                 np.log10(config.SPEED_MAX), np.log10(config.SPEED_INIT))
+        self.s_logwin = slider(4, "log10 window", np.log10(config.WINDOW_MIN),
+                               np.log10(config.WINDOW_MAX), np.log10(config.WINDOW_INIT))
+        self.tb_a = TextBox(fig.add_axes([0.76, 0.255, 0.08, 0.04]), "a = ",
+                            initial=f"{config.A_INIT}")
+        self.tb_a.on_submit(self._set_a_from_text)
+        self.chk_noise = CheckButtons(fig.add_axes([0.74, 0.13, 0.09, 0.07]),
                                       ["noise"], [config.NOISE_ON_INIT])
-        self.btn_reset = Button(fig.add_axes([0.86, 0.11, 0.08, 0.05]), "reset")
+        self.btn_reset = Button(fig.add_axes([0.86, 0.14, 0.08, 0.05]), "reset")
         self.btn_reset.on_clicked(self.reset)
         self.s_a.on_changed(lambda _v: self._update_f_curve())
 
         self.artists = [self.pt, self.spoke, self.txt, self.fline, self.vline, self.tline]
         self._update_f_curve()
+
+    def _set_a_from_text(self, text):
+        try:
+            v = float(text)
+        except ValueError:
+            return
+        self.s_a.set_val(min(max(v, config.A_MIN), config.A_MAX))
 
     def _update_f_curve(self):
         y = _f_on_grid(self.f, self.grid, self.omega, self.a)
@@ -183,11 +214,15 @@ class Player:
 
         ts = np.fromiter(self.hist_t, float)
         ths = np.fromiter(self.hist_theta, float)
-        self.tline.set_data(ts, ths)
-        t1 = max(self.t, config.TIME_WINDOW)
-        t0 = t1 - config.TIME_WINDOW
+        keep = ts >= self.t - self.window
+        keep[:-1] |= keep[1:]          # 窓の左端の外の一点も描いて線を端までつなぐ
+        self.tline.set_data(ts[keep], ths[keep])
+        t1 = max(self.t, self.window)
+        t0 = t1 - self.window
         self.ax_t.set_xlim(t0, t1)
         vis = ths[ts >= t0]
+        if vis.size == 0:
+            vis = ths[-1:]
         lo, hi = vis.min(), vis.max()
         mid, half = 0.5 * (lo + hi), max(0.5 * (hi - lo), np.pi) * 1.1
         self.ax_t.set_ylim(mid - half, mid + half)

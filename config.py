@@ -24,7 +24,17 @@ THETA_INIT = 0.0
 SEED = 0
 
 FRAME_INTERVAL_MS = 30      # 画面の一コマの間隔（実時間）
-SIM_TIME_PER_FRAME = 0.1    # 一コマで進める模型の時間
-TIME_WINDOW = 60.0          # 右下の時系列に見せる模型の時間の幅
-MAX_HISTORY = 20000         # 時系列に保持する点の数の上限
+
+# speed のスライダー（対数目盛）：一コマで進める模型の時間
+SPEED_MIN = 0.01
+SPEED_MAX = 10.0
+SPEED_INIT = 0.1
+
+# window のスライダー（対数目盛）：右下の時系列に見せる模型の時間の幅
+WINDOW_MIN = 10.0
+WINDOW_MAX = 1000.0
+WINDOW_INIT = 100.0
+
+POINTS_PER_FRAME = 20       # 時系列に残す点の、一コマあたりのおよその数
+MAX_HISTORY = 100000        # 時系列に保持する点の数の上限
 N_THETA_GRID = 400          # 右上のグラフの θ の刻み数
