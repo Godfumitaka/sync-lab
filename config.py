@@ -38,3 +38,14 @@ WINDOW_INIT = 100.0
 POINTS_PER_FRAME = 20       # 時系列に残す点の、一コマあたりのおよその数
 MAX_HISTORY = 100000        # 時系列に保持する点の数の上限
 N_THETA_GRID = 400          # 右上のグラフの θ の刻み数
+
+# ---- 段階二：measure.py（雑音なし） ----
+STAGE2_EPS_MIN = 1e-4       # ε = ω − a の最小
+STAGE2_EPS_MAX = 1e-1       # ε の最大
+STAGE2_N_EPS = 13           # ε を対数等間隔にとる個数
+STAGE2_DTS = [1e-1, 1e-2, 1e-3]
+STAGE2_THETA0 = 0.0         # 一周を測り始める θ
+STAGE2_T_MAX = 1e5          # 一周がこれを超えたら打ち切る（模型の時間）
+
+# 図の色（一系列ずつ、決まった順に使う）
+SERIES_COLORS = ["#2a78d6", "#eb6834", "#1baf7a"]
