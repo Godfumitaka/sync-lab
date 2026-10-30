@@ -1,0 +1,30 @@
+dt = 0.05: 出力1の格子 122.6 s（41600 軌道）、ロック側 89.3 s（28800 軌道）
+dt = 0.01: 出力1の格子 599.6 s（41600 軌道）、ロック側 440.1 s（28800 軌道）
+
+出力2：各 δ の、四通りの描き方での直線への乗り（R²）
+  dt = 0.05
+    δ = 0.02  点  9  linear 0.1597  semilog 0.4799  loglog 0.8929  inverse 0.9587
+    δ = 0.03  点  8  linear 0.2003  semilog 0.5242  loglog 0.9021  inverse 0.9709
+    δ = 0.05  点  7  linear 0.2188  semilog 0.5664  loglog 0.8990  inverse 0.9859
+    δ = 0.07  点  6  linear 0.2941  semilog 0.6138  loglog 0.9033  inverse 0.9953
+    δ = 0.1   点  5  linear 0.4152  semilog 0.7091  loglog 0.9302  inverse 0.9953
+    δ = 0.15  点  4  linear 0.5359  semilog 0.7619  loglog 0.9308  inverse 0.9969
+  dt = 0.01
+    δ = 0.02  点  9  linear 0.1643  semilog 0.4961  loglog 0.9019  inverse 0.9527
+    δ = 0.03  点  8  linear 0.2107  semilog 0.5377  loglog 0.9143  inverse 0.9638
+    δ = 0.05  点  7  linear 0.2163  semilog 0.5720  loglog 0.9024  inverse 0.9839
+    δ = 0.07  点  6  linear 0.3016  semilog 0.6438  loglog 0.9190  inverse 0.9903
+    δ = 0.1   点  5  linear 0.4159  semilog 0.7318  loglog 0.9421  inverse 0.9943
+    δ = 0.15  点  4  linear 0.5563  semilog 0.8093  loglog 0.9571  inverse 0.9977
+
+出力3：横軸 1/D・縦軸 ln(平均時間) の傾きの、δ に対する両対数の傾き
+  dt = 0.05: δ ∈ [0.02, 0.15]（6 点）  slope = +1.3760  R² = 0.9998
+  dt = 0.01: δ ∈ [0.02, 0.15]（6 点）  slope = +1.3697  R² = 0.9998
+
+dt による違い（両方の dt で全軌道が滑り終えた点での、平均時間の比 粗い dt / 細かい dt）
+  map: 122 点  中央値 1.003  範囲 [0.836, 1.249]
+  lock: 39 点  中央値 0.993  範囲 [0.843, 1.110]
+
+後ろ向きの滑りの総数：0
+
+保存：/home/user/sync-lab/unit1/results/stage3_*.csv, stage3_*.png

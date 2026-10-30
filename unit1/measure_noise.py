@@ -173,6 +173,7 @@ def report(r):
         ax.set_xlabel("a − ω")
         ax.set_ylabel("D")
         ax.set_title(f"dt = {dt:g}", fontsize=10)
+    fig.subplots_adjust(bottom=0.2)
     fig.colorbar(im, ax=axes[0].tolist(), label=f"mean time to 2π slip (capped at {t_max:g})")
     fig.text(0.01, 0.01, "×: some trajectories did not slip by T_MAX (value is a lower bound)",
              fontsize=8, color="0.35")
