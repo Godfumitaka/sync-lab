@@ -49,3 +49,28 @@ STAGE2_T_MAX = 1e5          # 一周がこれを超えたら打ち切る（模�
 
 # 図の色（一系列ずつ、決まった順に使う）
 SERIES_COLORS = ["#2a78d6", "#eb6834", "#1baf7a"]
+
+# ---- 段階三：measure_noise.py（雑音あり） ----
+STAGE3_DTS = [0.05, 0.01]
+STAGE3_T_MAX = 1e4          # これまでに滑らなかった軌道は打ち切り（模型の時間）
+STAGE3_SEED = 1
+
+# 出力1：(a − ω, D) の格子
+STAGE3_X_MIN = -0.1         # a − ω の範囲（閾値 0 の両側）
+STAGE3_X_MAX = 0.2
+STAGE3_N_X = 16
+STAGE3_LOG10_D_MIN = -4.0
+STAGE3_LOG10_D_MAX = -1.0
+STAGE3_N_D = 13
+STAGE3_N_TRAJ_MAP = 200     # 一つの格子点あたりの軌道数
+
+# 出力2・3：ロック側（a − ω = δ > 0）
+STAGE3_DELTAS = [0.02, 0.03, 0.05, 0.07, 0.1, 0.15]
+STAGE3_LOCK_LOG10_D_MIN = -3.5
+STAGE3_LOCK_LOG10_D_MAX = -0.75
+STAGE3_LOCK_N_D = 12
+STAGE3_N_TRAJ_LOCK = 400
+STAGE3_DONE_FRAC = 0.99     # 当てはめに使うのは、この割合以上の軌道が滑り終えた点だけ
+
+# 図の色（決まった順に使う。六系列まで）
+SERIES_COLORS_6 = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300"]
