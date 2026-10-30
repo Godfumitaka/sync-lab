@@ -86,3 +86,20 @@ APX1_SAMPLE_EVERY = 10      # 何ステップごとに位置を数えるか
 APX1_N_BINS = 100           # ヒストグラムの区切りの数
 APX1_DTS = [0.05, 0.01]
 APX1_SEED = 2
+
+# ---- 付録 手順三：push.py（一押し、雑音なし） ----
+APX3_A_MIN = 1.0
+APX3_A_MAX = 1.5
+APX3_A_INIT = 1.3
+APX3_P_MIN = -2.0           # 押しの強さ（正は θ が増える向き）
+APX3_P_MAX = 2.0
+APX3_P_INIT = 0.2
+APX3_TAU_MIN = 0.01         # 押しの長さ（対数目盛）
+APX3_TAU_MAX = 10.0
+APX3_TAU_INIT = 1.0
+APX3_DT = 0.005
+APX3_SPEED_MIN = 0.01       # 一コマで進める模型の時間（対数目盛）
+APX3_SPEED_MAX = 1.0
+APX3_SPEED_INIT = 0.05
+APX3_TIME_WINDOW = 40.0     # 右下の時系列に見せる時間の幅
+APX3_V_HALF_WIDTH = 2.0     # 右上の V(θ) を、今の θ の前後どれだけ見せるか
