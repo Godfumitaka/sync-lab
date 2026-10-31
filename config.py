@@ -166,3 +166,10 @@ U4_URN_SNAPSHOTS = [2, 10, 100, 2000]     # urn_dist.py：分布を描く回数
 U4_A3_RUNS = 2000                         # a3_split.py：走行の本数
 U4_A3_SNAPSHOTS = [1, 10, 30, 100, 1000, 10000]   # a3_split.py：s の分布を描く時刻
 U4_A3_SEED = 106
+
+# 単元四 手順三 (a)：状態の確率が偏っている場合
+U4_STEP3A_PIS = [0.5, 0.6, 0.7, 0.8, 0.9]     # 状態 1 の確率 π
+U4_STEP3A_RUNS = 1000
+U4_STEP3A_CHECKPOINTS = [10**4, 10**5, 10**6]
+U4_STEP3A_SEED = 7
+U4_CLASS_PROP = 0.9           # 分類で「その向きに固まった」とみなす壺の割合の下限
