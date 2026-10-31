@@ -103,3 +103,29 @@ APX3_SPEED_MAX = 1.0
 APX3_SPEED_INIT = 0.05
 APX3_TIME_WINDOW = 40.0     # 右下の時系列に見せる時間の幅
 APX3_V_HALF_WIDTH = 2.0     # 右上の V(θ) を、今の θ の前後どれだけ見せるか
+
+# ---- 単元三：二つの振動子 ----
+U3_OMEGA_MEAN = 1.0         # 二人の自然なリズムの平均。ω₁ = 平均 + Δω/2、ω₂ = 平均 − Δω/2
+
+# play_pair.py
+U3_DW_MIN = 0.0             # Δω のスライダー
+U3_DW_MAX = 1.0
+U3_DW_INIT = 0.3
+U3_K_MIN = 0.0              # 結合の強さ K のスライダー
+U3_K_MAX = 1.0
+U3_K_INIT = 0.25
+U3_LOG10_D_MIN = -4.0       # 雑音（対数目盛）。「noise」のチェックを外すと D = 0
+U3_LOG10_D_MAX = -1.0
+U3_LOG10_D_INIT = -2.0
+U3_NOISE_ON_INIT = False
+U3_DT_MIN = 1e-3
+U3_DT_MAX = 0.1
+U3_DT_INIT = 1e-2
+U3_SPEED_MIN = 0.01         # 一コマで進める模型の時間（対数目盛）
+U3_SPEED_MAX = 10.0
+U3_SPEED_INIT = 0.1
+U3_WINDOW_MIN = 10.0        # 右の時系列に見せる時間の幅（対数目盛）
+U3_WINDOW_MAX = 1000.0
+U3_WINDOW_INIT = 100.0
+U3_FREQ_WINDOW = 50.0       # 「実際の速さ」をこの時間の平均で測る
+U3_SEED = 3
