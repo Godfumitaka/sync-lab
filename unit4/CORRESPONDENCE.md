@@ -1,5 +1,7 @@
 # 論文の規則とコードの対応
 
+論文のリンク：https://www2.math.upenn.edu/~pemantle/papers/signalling.pdf
+
 論文：Argiento, Pemantle, Skyrms, Volkov (2009) "Learning to signal: Analysis of a micro-level reinforcement model",
 Stochastic Processes and their Applications 119(2), 373–390（以下、節と式の番号は論文のもの）
 
