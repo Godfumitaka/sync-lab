@@ -41,7 +41,7 @@ def main():
     matplotlib.rcParams.update({"axes.edgecolor": "0.55", "axes.labelcolor": "0.1",
                                 "xtick.color": "0.35", "ytick.color": "0.35"})
     colors = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100"]
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4), sharey=True)
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4))
     for ax, (power, title) in zip(axes, [(1, "Pólya urn:  P(white) = w/(w+b)"),
                                         (2, "x² urn:  P(white) = w²/(w²+b²)")]):
         snaps = evolve(power)
@@ -52,7 +52,11 @@ def main():
         ax.set_title(title, fontsize=10)
         ax.set_xlabel("fraction of white balls in the urn")
         ax.grid(color="0.92", lw=0.8)
+    axes[0].set_ylim(0, 2)
+    axes[1].set_yscale("log")
+    axes[1].set_ylim(1e-3, 1e3)
     axes[0].set_ylabel("probability density")
+    axes[1].set_ylabel("probability density (log scale)")
     axes[0].legend(frameon=False, fontsize=8)
     fig.tight_layout()
     os.makedirs(os.path.join(HERE, "results"), exist_ok=True)
