@@ -113,7 +113,7 @@ def main():
     n_last = config.U4_STEP2_CHECKPOINTS[-1]
     cls, psi, wr = many[n_last]
     np.savetxt(os.path.join(RESULTS, "step2_final.csv"), np.column_stack([np.arange(len(cls)), cls, psi, wr]),
-               delimiter=",", comments="", header="run,class(0=I,1=II,2=other),psi,win_rate",
+               delimiter=",", comments="", header="run,class_0I_1II_2other,psi,win_rate",
                fmt=["%d", "%d", "%.6f", "%.6f"])
 
     # 図
