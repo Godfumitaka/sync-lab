@@ -151,5 +151,11 @@ U4_N_ACTS = 2
 U4_STATE_PROBS = [0.5, 0.5]   # Nature は公平な硬貨で状態を選ぶ
 U4_INIT_BALLS = 1.0           # どの壺にも、各色の玉が一つずつ
 U4_REINFORCE = 1.0            # 勝ったら、引いた玉の写しを一つ足す
-# 論文外の仮定（ASSUMPTIONS.md を参照）。手順二で決めて書き足す
-U4_SEED = 5
+# 論文外の仮定（ASSUMPTIONS.md を参照）
+U4_SEED = 5                   # 一本の走行の種
+U4_SEED_MANY = 6              # 多数の走行の種
+U4_STEP2_N = 10**6            # 一本の長さ（試行回数）
+U4_STEP2_RUNS = 1000          # 多数の走行の本数
+U4_STEP2_CHECKPOINTS = [10**2, 10**3, 10**4, 10**5, 10**6]   # 落ち着き先を判定する時刻
+U4_SINGLE_RECORD_POINTS = 400 # 一本の走行の推移を記録する時刻の数（対数等間隔）
+U4_CLASS_THRESHOLD = 0.9      # 「言葉」に落ち着いたとみなす、次の一回の勝つ確率の下限
