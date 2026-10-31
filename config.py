@@ -159,3 +159,10 @@ U4_STEP2_RUNS = 1000          # 多数の走行の本数
 U4_STEP2_CHECKPOINTS = [10**2, 10**3, 10**4, 10**5, 10**6]   # 落ち着き先を判定する時刻
 U4_SINGLE_RECORD_POINTS = 400 # 一本の走行の推移を記録する時刻の数（対数等間隔）
 U4_CLASS_THRESHOLD = 0.9      # 「言葉」に落ち着いたとみなす、次の一回の勝つ確率の下限
+
+# 単元四 寄り道 A（分布の力学）
+U4_URN_N_MAX = 2000                       # urn_dist.py：引く回数
+U4_URN_SNAPSHOTS = [2, 10, 100, 2000]     # urn_dist.py：分布を描く回数
+U4_A3_RUNS = 2000                         # a3_split.py：走行の本数
+U4_A3_SNAPSHOTS = [1, 10, 30, 100, 1000, 10000]   # a3_split.py：s の分布を描く時刻
+U4_A3_SEED = 106

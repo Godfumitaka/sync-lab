@@ -11,14 +11,18 @@ n 回引いたあとの白の回数 k の確率 P_n(k) を、マスター方程�
 """
 
 import os
+import sys
 
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-N_MAX = 2000
-SNAPSHOTS = [2, 10, 100, 2000]
+sys.path.insert(0, os.path.join(HERE, ".."))
+import config  # noqa: E402
+
+N_MAX = config.U4_URN_N_MAX
+SNAPSHOTS = config.U4_URN_SNAPSHOTS
 
 
 def evolve(power):
