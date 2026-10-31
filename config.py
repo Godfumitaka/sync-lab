@@ -129,3 +129,16 @@ U3_WINDOW_MAX = 1000.0
 U3_WINDOW_INIT = 100.0
 U3_FREQ_WINDOW = 50.0       # 「実際の速さ」をこの時間の平均で測る
 U3_SEED = 3
+
+# measure_pair.py（相手と影の滑りの平均時間）
+U3M_K = 0.25
+U3M_DW = 0.2                # 相手（a = 2K）も影（a = K）もそろう Δω
+U3M_LOG10_D_MIN = -2.3
+U3M_LOG10_D_MAX = -0.7
+U3M_N_D = 9
+U3M_N_TRAJ = 400
+U3M_T_MAX = 1e4
+U3M_DTS = [0.05, 0.01]
+U3M_DONE_FRAC = 0.99        # 当てはめに使うのは、この割合以上の軌道が滑り終えた点
+U3M_MIN_MEAN = 50.0         # 「滑りがまれ」とみなす平均時間の下限（単元一 段階三の絞り直しと同じ）
+U3M_SEED = 4
