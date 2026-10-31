@@ -1,0 +1,5 @@
+system,dt,n_points,slope,intercept,predicted_slope
+partner,0.05,4,0.221024,2.85067,0.226402
+partner,0.01,4,0.217661,2.8759,0.226402
+shadow,0.05,6,0.0230388,3.75069,0.0212998
+shadow,0.01,6,0.0225519,3.77639,0.0212998
