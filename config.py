@@ -142,3 +142,14 @@ U3M_DTS = [0.05, 0.01]
 U3M_DONE_FRAC = 0.99        # 当てはめに使うのは、この割合以上の軌道が滑り終えた点
 U3M_MIN_MEAN = 50.0         # 「滑りがまれ」とみなす平均時間の下限（単元一 段階三の絞り直しと同じ）
 U3M_SEED = 4
+
+# ---- 単元四：合図ゲーム（Argiento, Pemantle, Skyrms, Volkov 2009） ----
+# 論文どおりの値（§1.3–1.4）
+U4_N_STATES = 2
+U4_N_SIGNALS = 2
+U4_N_ACTS = 2
+U4_STATE_PROBS = [0.5, 0.5]   # Nature は公平な硬貨で状態を選ぶ
+U4_INIT_BALLS = 1.0           # どの壺にも、各色の玉が一つずつ
+U4_REINFORCE = 1.0            # 勝ったら、引いた玉の写しを一つ足す
+# 論文外の仮定（ASSUMPTIONS.md を参照）。手順二で決めて書き足す
+U4_SEED = 5
