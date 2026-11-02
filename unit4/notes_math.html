@@ -1,0 +1,226 @@
+<title>壺の分布の力学ノート</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column, each derivation step is a numbered stage (the order is real), open questions are marked as such. */
+:root {
+  --bg: #f7f8f6;
+  --surface: #ffffff;
+  --fg: #1d2420;
+  --muted: #5d6862;
+  --rule: #d9dfdb;
+  --accent: #2f6f5e;       /* urn green */
+  --accent-soft: #e3efea;
+  --ask: #8a5a12;          /* open question */
+  --ask-soft: #f6ecda;
+  --font-display: "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --font-body: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131815; --surface: #1a201c; --fg: #e4ebe6; --muted: #9fada5; --rule: #2e3732;
+    --accent: #7cc4ad; --accent-soft: #1f2e28; --ask: #e2b56a; --ask-soft: #2c2416;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #131815; --surface: #1a201c; --fg: #e4ebe6; --muted: #9fada5; --rule: #2e3732;
+  --accent: #7cc4ad; --accent-soft: #1f2e28; --ask: #e2b56a; --ask-soft: #2c2416;
+  color-scheme: dark;
+}
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 16px; line-height: 1.8;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 32px 64px;
+}
+main { max-width: 44rem; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+header { display: flex; flex-direction: column; gap: 8px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.9rem; line-height: 1.35; margin: 0; text-wrap: balance; }
+.lede { color: var(--muted); margin: 0; }
+section { display: flex; flex-direction: column; gap: 12px; }
+h2 { font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; margin: 0; display: flex; gap: 12px; align-items: baseline; text-wrap: balance; }
+h2 .no { font-family: var(--font-mono); font-size: .95rem; color: var(--accent); font-weight: 500; }
+p { margin: 0; }
+.eq { overflow-x: auto; padding: 14px 18px; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; }
+.eq.key { border-color: var(--accent); background: var(--accent-soft); }
+.ask { background: var(--ask-soft); border-left: 3px solid var(--ask); padding: 12px 16px; border-radius: 0 6px 6px 0; display: flex; flex-direction: column; gap: 6px; }
+.ask .tag { font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; color: var(--ask); }
+.status { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+ul { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 4px; }
+table { border-collapse: collapse; width: 100%; font-size: 15px; }
+.tablewrap { overflow-x: auto; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-weight: 500; color: var(--muted); font-size: 13px; }
+hr { border: none; border-top: 1px solid var(--rule); margin: 0; }
+mjx-container[display="true"] { margin: 0.4em 0 !important; }
+</style>
+
+<main>
+  <header>
+    <div class="eyebrow">sync-lab · 単元四 寄り道 A</div>
+    <h1>壺の分布の力学ノート</h1>
+    <p class="lede">一回ずつ引く壺の動きを、「割合の分布が従う式」として書き直す。最後に、単元一の付録の FP 方程式と同じ形にたどり着くのが目標。</p>
+  </header>
+
+  <section>
+    <h2><span class="no">記号</span>設定</h2>
+    <p>壺の玉は全部で $N$ 個、白の割合を $x$ とする。次に白を引く確率を $p$ と書く。</p>
+    <div class="tablewrap"><table>
+      <tr><th>壺</th><th>白を引く確率 $p$</th></tr>
+      <tr><td>ポリアの壺</td><td>$p = x$</td></tr>
+      <tr><td>$x^2$ の壺</td><td>$p = \dfrac{x^2}{x^2 + (1-x)^2}$</td></tr>
+    </table></div>
+    <p>引いた色の玉を 1 個足す。一回で割合が動く量 $\Delta x$ は二通り。</p>
+    <div class="eq">
+      $$\Delta x = \begin{cases} \dfrac{1-x}{N+1} & \text{白を引く（確率 } p\text{）} \\[2ex] -\dfrac{x}{N+1} & \text{黒を引く（確率 } 1-p\text{）} \end{cases}$$
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="no">A1</span>厳密な式（マスター方程式）</h2>
+    <p>$n$ 回引いて白が $k$ 回出ている確率を $P_n(k)$ とする（玉は白 $k+1$・黒 $n-k+1$）。</p>
+    <div class="eq">
+      $$P_{n+1}(k) = P_n(k-1)\,p(k-1,n) + P_n(k)\,\bigl(1 - p(k,n)\bigr)$$
+    </div>
+    <p>分布そのものが従う、乱数の出てこない一次の式。図 <code>results/urn_dist.png</code> はこれを 2000 回くり返したもの。ポリアの壺は一様のまま、$x^2$ の壺は 0 と 1 に割れた。</p>
+  </section>
+
+  <hr>
+
+  <section>
+    <h2><span class="no">A2 · 一段目</span>一回の変化の平均と分散</h2>
+    <p><strong>平均</strong>（流れ）：</p>
+    <div class="eq key">
+      $$\mathbb{E}[\Delta x] = p\,\frac{1-x}{N+1} - (1-p)\,\frac{x}{N+1} = \frac{p - x}{N+1}$$
+    </div>
+    <ul>
+      <li>ポリアの壺：$p - x = 0$。流れがない。</li>
+      <li>$x^2$ の壺：$p - x = \dfrac{x(1-x)(2x-1)}{x^2 + (1-x)^2}$。$x=1/2$ が山、0 と 1 に引かれる。</li>
+    </ul>
+    <p><strong>二乗の平均</strong>（揺らぎの大きさ）：二乗はどちらの場合も正なので、足し合わせても 0 にはならない。</p>
+    <div class="eq">
+      $$\mathbb{E}[(\Delta x)^2] = p\,\frac{(1-x)^2}{(N+1)^2} + (1-p)\,\frac{x^2}{(N+1)^2}$$
+    </div>
+    <p>$p \approx x$ とすると $x(1-x)^2 + (1-x)x^2 = x(1-x)\bigl[(1-x) + x\bigr] = x(1-x)$ なので</p>
+    <div class="eq key">
+      $$\mathbb{E}[(\Delta x)^2] \approx \frac{x(1-x)}{(N+1)^2}$$
+    </div>
+    <p><strong>桁の違い</strong>：平均は $1/N$、二乗の平均は $1/N^2$ に比例する。</p>
+  </section>
+
+  <section>
+    <h2><span class="no">A2 · 二段目</span>時間の測り方</h2>
+    <p>一回引くごとに時間を $\Delta t = \dfrac{1}{N+1}$ だけ進めれば、流れは時間あたり $p - x$ になる。進んだ時間は調和級数で、</p>
+    <div class="eq key">
+      $$t = \sum_{n} \frac{1}{n+1} \approx \log N, \qquad N \approx e^{t}$$
+    </div>
+    <p>手順二の一本の走行の図を、横軸を対数にして描いていたのは、おおむねこの時間で見ていたことになる（合図ゲームでは玉が勝ったときだけ増えるので、補正が要る。手順三 (a) の節）。</p>
+    <p><strong>なぜ $\Delta t$ で割るか</strong>：壺にはもともと時間がなく、あるのは「一回ごとの変化」だけ。一回に $\Delta t$ だけ時間がかかると決めれば、「一回あたり」を「時間あたり」に直すには $\Delta t$ で割る（移動距離÷かかった時間＝速さ、と同じ）。単元一ではこれを逆向きにやっていた：$\Delta\theta = f\,dt + \sqrt{2D\,dt}\,\xi$ なので、$\mathbb{E}[\Delta\theta]/dt = f$、$\mathbb{E}[(\Delta\theta)^2]/dt \approx 2D$。壺では「一回ごとの変化」が先にあり、そこから $f$ と $2D$ にあたるものを取り出している。時計の選び方（$\Delta t$）は自由だが、$\Delta t = 1/(N+1)$ と選ぶと流れが時間によらない形（$p-x$）になり、時間の効果がすべて揺らぎの側（$e^{-t}$）に集まる。</p>
+  </section>
+
+  <section>
+    <h2><span class="no">A2 · 三段目</span>FP 方程式の形に当てはめる</h2>
+    <p><strong>どこから来る式か</strong>：一般の型は次のとおり。時間あたりの平均の変化を $A(x)$、時間あたりの二乗の平均を $B(x)$ とすると、</p>
+    <div class="eq">
+      $$\frac{\partial \rho}{\partial t} = -\frac{\partial J}{\partial x}, \qquad J = A\,\rho - \frac{1}{2}\frac{\partial}{\partial x}\bigl(B\,\rho\bigr)$$
+    </div>
+    <p>「確率は流れ $J$ に乗って運ばれる」（連続の式）と、「$J$ は、流れが運ぶ分 $A\rho$ と、揺らぎで濃いところから薄いところへ漏れる分」の和。単元一の付録の $J = f\rho - D\,\partial_\theta\rho$ は、$A = f$、$B = 2D$（一定）とした同じ式。ここでは $A$ と $B$ を壺から計算する：</p>
+    <div class="eq">
+      $$\frac{\mathbb{E}[\Delta x]}{\Delta t} = p(x) - x, \qquad \frac{\mathbb{E}[(\Delta x)^2]}{\Delta t} \approx \frac{x(1-x)}{N+1} = x(1-x)\,e^{-t}$$
+    </div>
+    <p>単元一の付録と同じく「流れが分布を運ぶ項」と「揺らぎが分布を広げる項」を並べると、割合の分布 $\rho(x,t)$ が従う式になる（揺らぎの強さが $x$ によるので、$x(1-x)$ は二階微分の内側に入る）。</p>
+    <div class="eq key">
+      $$\frac{\partial \rho}{\partial t} = -\frac{\partial}{\partial x}\Bigl[\bigl(p(x) - x\bigr)\rho\Bigr] + \frac{1}{2}\,e^{-t}\,\frac{\partial^2}{\partial x^2}\Bigl[x(1-x)\,\rho\Bigr]$$
+    </div>
+    <ul>
+      <li><strong>揺らぎは時間とともに消える</strong>：強さが $e^{-t}$ で減るので、全時間で足しても $\int e^{-t}dt$ は有限。分布はいつか凍りつく。</li>
+      <li><strong>ポリアの壺</strong>：流れが 0。消えていく揺らぎが広げた形（一様）のまま凍る。</li>
+      <li><strong>$x^2$ の壺・合図ゲーム</strong>：揺らぎが分布を少し広げているあいだに、流れが山から谷へ運び出す。序盤のたまたまが決めるのは「どちらの谷か」だけ。</li>
+      <li><strong>見方の得</strong>：$x$ の動きは非線形でも、$\rho$ の式は $\rho$ について線形。分布の側から見ると、確率過程は線形の力学系になる。</li>
+    </ul>
+  </section>
+  <hr>
+
+  <section>
+    <h2><span class="no">手順三 (a)</span>合図を無視する状態の近くの流れ</h2>
+    <p>論文はこの場合を証明していない。ここでやるのは、平均の流れ（ODE）を使った見積もり。</p>
+    <p><strong>一般の流れ</strong>：送り手の「状態 $i$・合図 $x$」の玉の割合を $x_{ix}$、状態 $i$ の確率を $\pi_i$ とする。受け手の壺は対称性から送り手と同じ数なので、合図 $x$ を見た受け手が行為 $i$ を選ぶ確率は $x_{ix}/x_{\cdot x}$（$x_{\cdot x} = \sum_j x_{jx}$）。一回ごとに時間を $\Delta t = 1/M$（$M$ はそのときの玉の総数）進めると</p>
+    <div class="eq key">
+      $$\frac{dx_{ix}}{dt} = \pi_i\,\frac{x_{ix}^2}{x_{i\cdot}\,x_{\cdot x}} - x_{ix}\,\psi, \qquad \psi = \sum_{i,x} \pi_i\,\frac{x_{ix}^2}{x_{i\cdot}\,x_{\cdot x}}$$
+    </div>
+    <p>第一項は「状態 $i$ が来て、合図 $x$ を送り、受け手が $i$ と当てる」確率（そのとき $x_{ix}$ の玉が一つ増える）。第二項は、勝つたびに玉の総数が増えて割合が薄まる分。$\pi_1 = \pi_2 = 1/2$ では論文の $F$ に一致する。</p>
+    <p><strong>合図を無視する状態の近く</strong>：受け手がいつも行為 1 を選ぶのは、状態 2 の玉の割合 $y = x_{2A} + x_{2B}$ が 0 に近いとき。状態 1 の壺の合図の割合を $a_x$、状態 2 の壺の合図の割合を $q_x$ と書く（$x_{1x} \approx a_x$、$x_{2x} = y\,q_x$、$\pi_1 = \pi$）。$y$ の一次までとると $\psi \approx \pi$ で、</p>
+    <div class="eq key">
+      $$\frac{dy}{dt} \approx \lambda\,y, \qquad \lambda = (1-\pi)\sum_x \frac{q_x^2}{a_x} - \pi$$
+    </div>
+    <ul>
+      <li>$\lambda &lt; 0$：状態 2 の玉は薄まっていき、合図を無視する状態に吸い込まれる。</li>
+      <li>$\lambda &gt; 0$：状態 2 の玉は育ち、言葉の方へ押し出される。</li>
+      <li><strong>訂正</strong>：合図ゲームでは、玉は<strong>勝ったときだけ</strong>増える。一回あたりの増え方は平均 $\psi$ なので $dM = \psi\,M\,dt$、つまり $\log M \approx \psi\,t$。合図を無視する状態の近くでは $\psi \approx \pi$ なので $t \approx (\log M)/\pi$。したがって $y \propto e^{\lambda t} = M^{\lambda/\pi}$（引いた回数 $n$ に対しても $M \approx \pi n$ なので同じ指数）。以前「$y \propto N^{\lambda}$」と書いたのは誤りで、<strong>指数は $\lambda/\pi$</strong>。壺の節（A1・A2）は引くたびに必ず玉が増えるので、$t = \log N$ のまま正しい。</li>
+      <li><strong>吸引の強さ $\lambda$ は、玉の数や回数に対するべきの指数 $\lambda/\pi$ になる</strong>。指数が小さいと、何桁も引かないと落ち着かない。</li>
+    </ul>
+    <h3 style="font-family: var(--font-display); font-size: 1.05rem; margin: 8px 0 0;">導出：玉の数を数えるだけ</h3>
+    <p>状態 2 ・合図 $x$ の玉の数を $n_{2x} = y\,q_x\,M$、状態 2 の玉の合計を $n_2 = yM$ とする。</p>
+    <p><strong>① 状態 2 で合図 $x$ を使って勝つ確率</strong>（一回あたり）：状態 2 が来る（$1-\pi$）× 送り手が $x$ を使う（$q_x$）× 受け手が $x$ を状態 2 と理解する（壺 $x$ の行為 2 の玉 $y q_x$ と行為 1 の玉 $\approx a_x$ の比）。</p>
+    <div class="eq">
+      $$\Pr[\,n_{2x} \text{ が } 1 \text{ 増える}\,] \approx (1-\pi)\; q_x \cdot \frac{y\,q_x}{a_x}$$
+    </div>
+    <p><strong>② 時間あたりに直す</strong>（一回あたり $\Delta t = 1/M$ なので $M$ を掛ける）：</p>
+    <div class="eq">
+      $$\frac{dn_{2x}}{dt} = (1-\pi)\,n_2\,\frac{q_x^2}{a_x}, \qquad \frac{dn_2}{dt} = (1-\pi)\,n_2 \sum_x \frac{q_x^2}{a_x}, \qquad \frac{dM}{dt} = \psi M \approx \pi M$$
+    </div>
+    <p><strong>③ 割合に直す</strong>（$y = n_2/M$、$q_A = n_{2A}/n_2$ の対数微分）：</p>
+    <div class="eq key">
+      $$\frac{d\log y}{dt} = \frac{d\log n_2}{dt} - \frac{d\log M}{dt} = (1-\pi)\sum_x \frac{q_x^2}{a_x} - \pi = \lambda$$
+      $$\frac{dq_A}{dt} = q_A\Bigl(\frac{d\log n_{2A}}{dt} - \frac{d\log n_2}{dt}\Bigr) = (1-\pi)\,q_A\Bigl(\frac{q_A}{a_A} - \sum_x \frac{q_x^2}{a_x}\Bigr)$$
+    </div>
+    <p>$a = (1/2, 1/2)$ を入れると $\lambda = 2(1-\pi)(q_A^2 + q_B^2) - \pi$、$\dfrac{dq_A}{dt} = 2(1-\pi)\,q_A q_B\,(2q_A - 1)$。二つ目は $x^2$ の壺の流れ $x(1-x)(2x-1)$ と同じ形（$q_x$ が二回掛かるのは、「使う」と「理解される」が同じ玉で数えられているから）。</p>
+    <div class="ask">
+      <span class="tag">問い（済み）</span>
+      <p>(1) $\lambda$ をいちばん小さくする $q$ はどれか（状態 2 の合図の送り方が、状態 1 と同じとき、つまり $q = a$ を試す）。そのときの $\lambda$ はいくつで、$\pi &gt; 1/2$ なら符号はどうなるか。</p>
+      <p>(2) $\pi = 0.6$ と $\pi = 0.9$ で、$y$ が減る速さは $N$ の何乗か。一桁減らすのに、それぞれ何回くらい引く必要があるか。</p>
+    </div>
+  </section>
+
+  <hr>
+
+  <section>
+    <h2><span class="no">手順三 (b)</span>(イ) が (ア) に崩れる流れ</h2>
+    <p><strong>状況 (イ)</strong>：送り手は状態 1 → A、2 → B（どちらもいつも）、状態 3 は A を $q_A$、B を $q_B = 1 - q_A$ で迷う。受け手の壺 A はほとんど行為 1、壺 B はほとんど行為 2 で、行為 3 の玉が割合 $r_A$, $r_B$ だけ残る。状態は 1/3 ずつ来る。受け手の壺 A の玉の数を $N_A$、送り手の状態 3 の壺の玉の数を $m_3$、引いた回数を $n$ とする。</p>
+    <p><strong>一回あたりの増え方の期待値</strong>（漸化式）：</p>
+    <div class="eq">
+      $$\mathbb{E}[\Delta(\text{壺 A の行為 3})] = \tfrac13\,q_A\,r_A, \qquad \mathbb{E}[\Delta N_A] = \tfrac13\,(1-r_A) + \tfrac13\,q_A\,r_A$$
+      $$\mathbb{E}[\Delta(\text{状態 3 の壺の A})] = \tfrac13\,q_A\,r_A, \qquad \mathbb{E}[\Delta m_3] = \tfrac13\,(q_A r_A + q_B r_B)$$
+    </div>
+    <p>割合の変化は「分子の増え方 − 割合 × 分母の増え方」を分母で割ったものなので、</p>
+    <div class="eq key">
+      $$\frac{dr_A}{dn} = -\frac{1}{3N_A}\,r_A\,(1-r_A)\,(1-q_A), \qquad \frac{dq_A}{dn} = \frac{1}{3m_3}\,q_A\,q_B\,(r_A - r_B)$$
+    </div>
+    <p>$N_A \approx n/3$ なので、時間を $\tau = \log n$ で測り、$r$ が小さいとすると（$c = n/(3m_3) &gt; 0$）</p>
+    <div class="eq key">
+      $$\frac{dr_A}{d\tau} \approx -q_B\,r_A, \qquad \frac{dr_B}{d\tau} \approx -q_A\,r_B, \qquad \frac{dq_A}{d\tau} = c\,q_A q_B\,(r_A - r_B)$$
+      $$\Longrightarrow \quad \frac{d}{d\tau}\log\frac{r_A}{r_B} = q_A - q_B = 2q_A - 1$$
+    </div>
+    <ul>
+      <li><strong>鶏と卵</strong>：$r_A &gt; r_B$ なら $q_A$ が上がる。$q_A &gt; 1/2$ なら $r_A/r_B$ が大きくなる。互いが互いを押し上げる正のフィードバック。</li>
+      <li><strong>行き先</strong>：$q_A \to 1$（または 0）。状態 3 が一つの合図を状態 1（または 2）と共有する形 (ア)。</li>
+      <li><strong>そのあと</strong>：$q_A = 1$ では $dr_A/d\tau = 0$。壺 A の「行為 1 と 3 の混ぜ方」に流れがなく（ポリアの壺）、たまたまの割合で凍る。使われなくなった側の $r_B$ は $e^{-\tau} = 1/n$ で消える。</li>
+      <li><strong>ゆっくりな理由</strong>：$r$ は小さく、状態 3 の勝ちはまれなので、$q$ が動くのは状態 3 で勝ったときだけ。</li>
+    </ul>
+  </section>
+</main>
+
+<script>
+window.MathJax = {
+  tex: { inlineMath: [["$", "$"], ["\\(", "\\)"]], displayMath: [["$$", "$$"]] },
+  svg: { fontCache: "global" },
+  options: { enableMenu: false }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js"></script>
