@@ -193,3 +193,9 @@ U4_STEP3B_N_ACTS = 3
 U4_STEP3B_RUNS = 1000
 U4_STEP3B_CHECKPOINTS = [10**4, 10**5, 10**6]
 U4_STEP3B_SEED = 9
+
+# 単元四 手順三 (c)：三状態・三合図・三行為
+U4_STEP3C_N = 3                # 状態・合図・行為の数
+U4_STEP3C_RUNS = 1000
+U4_STEP3C_CHECKPOINTS = [10**4, 10**5, 10**6]
+U4_STEP3C_SEED = 10
