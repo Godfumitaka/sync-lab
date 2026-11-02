@@ -184,3 +184,4 @@ U4_PX_N = 10**7               # 引く回数
 U4_PX_RECORD_POINTS = 60      # 記録する時刻の数（対数等間隔）
 U4_PX_FIT_FROM = 100.0        # 傾きの当てはめに使う範囲：玉の総数が初期の何倍以上か
 U4_PX_SEED = 8
+U4_PHASE_SHOW_RUNS = 60       # phase_info.py：相図に重ねる走行の数
