@@ -199,3 +199,13 @@ U4_STEP3C_N = 3                # 状態・合図・行為の数
 U4_STEP3C_RUNS = 1000
 U4_STEP3C_CHECKPOINTS = [10**4, 10**5, 10**6]
 U4_STEP3C_SEED = 10
+
+# 単元四 寄り道：(イ) → (ア) を理解するための小さな模型（toy_urnA.py）。受け手の壺 A だけを追い、送り手は固定
+U4_TOY_QS = [1.0, 0.8, 0.5]   # 状態 3 が合図 A を送る確率 q_A
+U4_TOY_INIT_ACT1 = 8          # 壺 A の行為 1 の玉（初期）
+U4_TOY_INIT_ACT3 = 2          # 壺 A の行為 3 の玉（初期）。r_A = 0.2
+U4_TOY_N = 10**5              # 引いた回数（合図 A が届かなかった回も数える）
+U4_TOY_RUNS = 20              # 実験 1・2 の本数
+U4_TOY_BETA_RUNS = 500        # 実験 3（q_A = 1.0）の本数
+U4_TOY_RECORD_POINTS = 200    # r_A を記録する時刻の数（対数等間隔）
+U4_TOY_SEED = 11
