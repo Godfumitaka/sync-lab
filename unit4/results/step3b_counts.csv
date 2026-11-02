@@ -1,0 +1,4 @@
+n,shared_signal,state_without_signal,all_one_signal,other,psi_mean,info_mean
+10000,915,67,0,18,0.663340,0.860196
+100000,984,14,0,2,0.666272,0.904740
+1000000,999,1,0,0,0.666622,0.915612
