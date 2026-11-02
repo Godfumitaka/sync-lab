@@ -185,3 +185,11 @@ U4_PX_RECORD_POINTS = 60      # 記録する時刻の数（対数等間隔）
 U4_PX_FIT_FROM = 100.0        # 傾きの当てはめに使う範囲：玉の総数が初期の何倍以上か
 U4_PX_SEED = 8
 U4_PHASE_SHOW_RUNS = 60       # phase_info.py：相図に重ねる走行の数
+
+# 単元四 手順三 (b)：三状態・二合図・三行為（合図が足りない場合）
+U4_STEP3B_N_STATES = 3
+U4_STEP3B_N_SIGNALS = 2
+U4_STEP3B_N_ACTS = 3
+U4_STEP3B_RUNS = 1000
+U4_STEP3B_CHECKPOINTS = [10**4, 10**5, 10**6]
+U4_STEP3B_SEED = 9
