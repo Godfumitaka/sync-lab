@@ -248,3 +248,7 @@ U5_S0_SWEEP_NOISES = [0.1, 0.5, 1.0, 2.0]        # 雑音 σ の掃引
 U5_S0_SWEEP_RUNS = 100
 U5_S0_SWEEP_SEED = 502
 U5_SELFTEST_SEED = 599
+
+# 単元五：設定を目で見る図（show_setup.py）。学習は走らせない
+U5_SHOW_T = 100               # 見せるステップ数
+U5_SHOW_SEED = 503
