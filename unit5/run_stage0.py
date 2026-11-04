@@ -6,7 +6,7 @@
 主な条件（config の U5_* の世界）：U5_S0_RUNS 本を U5_S0_T ステップ。
     チャンネルごとの P(自分)、順モデルによる予測の良さ R²、自他の区別（log BF：M2「自分と世界」対 M1「自分だけ」）
 掃引：三本の自分のチャンネルの遅れ d（U5_S0_SWEEP_DELAYS）× 雑音 σ（U5_S0_SWEEP_NOISES）、各 U5_S0_SWEEP_RUNS 本。
-    「見分けた時刻」（ASSUMPTIONS.md の 12）
+    「見分けた時刻」（ASSUMPTIONS.md の 19）
 
 出力（results/）
     stage0_main.png, stage0_main.csv     主な条件の推移
@@ -33,7 +33,7 @@ from selfworld import (Agent, default_env, first_settled, pad_for, prediction_r2
                        record_times, simulate)
 
 RESULTS = os.path.join(HERE, "results")
-CHUNK = 25            # 一つのプロセスに渡す走行の数
+CHUNK = config.U5_CHUNK   # 一つのプロセスに渡す走行の数（かたまりごとに種を分けるので、結果はこの値に依存する）
 
 
 def _chunk(args):
