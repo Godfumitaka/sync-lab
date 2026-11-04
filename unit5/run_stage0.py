@@ -4,7 +4,7 @@
     python3 run_stage0.py
 
 主な条件（config の U5_* の世界）：U5_S0_RUNS 本を U5_S0_T ステップ。
-    チャンネルごとの P(自分)、自分の模型による予測の良さ R²、自他の区別（log BF：M2「自分と世界」対 M1「自分だけ」）
+    チャンネルごとの P(自分)、順モデルによる予測の良さ R²、自他の区別（log BF：M2「自分と世界」対 M1「自分だけ」）
 掃引：三本の自分のチャンネルの遅れ d（U5_S0_SWEEP_DELAYS）× 雑音 σ（U5_S0_SWEEP_NOISES）、各 U5_S0_SWEEP_RUNS 本。
     「見分けた時刻」（ASSUMPTIONS.md の 12）
 
@@ -112,7 +112,7 @@ def plot_main(env, rec, res, r2_ceil, path):
     a1.set_title("one run", fontsize=10, loc="left")
     a2.set_title(f"{res['p_self'].shape[0]} runs: median and 10–90%", fontsize=10, loc="left")
     a1.legend(frameon=False, fontsize=8, loc="center right")
-    a3.set_ylabel("R² of the self model (median)")
+    a3.set_ylabel("R² of the forward model (median)")
     a3.set_title("prediction from own commands (dotted: ceiling)", fontsize=10, loc="left")
     lb = res["log_bf"]
     a4.fill_between(rec, *np.quantile(lb, [0.1, 0.9], axis=0), color=cols[0], alpha=0.15, lw=0)

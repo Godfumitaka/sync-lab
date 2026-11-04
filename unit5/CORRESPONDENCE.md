@@ -18,10 +18,10 @@
 | 指令：でたらめに出す（モーター・バブリング） | `simulate` の `u = rng.normal(...)`（`U5_U_STD`） |
 | エージェントが知っているのは自分の指令の控えだけ | `Agent.features` が使うのは `u` と `s` だけ（世界と雑音の項、遅れ、どのチャンネルが自分かは渡さない） |
 | 最初は「自分の指令で動いている」かどうかを五分五分 | `U5_PRIOR_SELF = 0.5`、`Agent.beliefs` |
-| 指令の控えから感覚を予測する小さな線形の模型を学ぶ | 窓 L の線形の模型 θ_i・ũ(t)。`Agent._spectral`（θ を積分）、θ の事後平均は `Agent._evaluate_batch` の `theta1`, `theta2` |
+| 指令の控えから感覚を予測する小さな線形の模型を学ぶ（順モデル） | 窓 L の線形の模型 θ_i・ũ(t)。`Agent._spectral`（θ を積分）、θ の事後平均は `Agent._evaluate_batch` の `theta1`, `theta2` |
 | チャンネルごとに「自分のものである度合い」を更新する | `Agent.beliefs` の `p_self`（各記録の時刻で、それまでの全データから計算） |
 | 自分と世界の区別（「全部自分」の模型と「自分と世界」の模型の証拠の比較） | `Agent.beliefs` の `log_bf`、`p_two`（定義は ASSUMPTIONS.md の 17） |
-| 自分の模型による予測の良さ | `prediction_r2`（定義は ASSUMPTIONS.md の 18） |
+| 順モデルによる予測の良さ | `prediction_r2`（定義は ASSUMPTIONS.md の 18） |
 
 ## 点検（`python3 selfworld.py --selftest`）
 
