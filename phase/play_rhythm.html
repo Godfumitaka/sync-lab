@@ -1,0 +1,374 @@
+<title>二つのリズム</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: controls on top; the circle (two bodies) beside the flow diagram; the time strips full width below.
+   Palette follows unit4/play_signal.html (the repo's existing look): blue = body 1, orange = body 2. */
+:root {
+  --bg: #f6f7f5;
+  --surface: #ffffff;
+  --fg: #1c231f;
+  --muted: #5c6862;
+  --rule: #d8ded9;
+  --grid: #eceff0;
+  --accent: #2f6f5e;
+  --body1: #2a78d6;
+  --body2: #eb6834;
+  --band: rgba(42, 120, 214, 0.12);
+  --font-body: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131815; --surface: #1b211d; --fg: #e3eae5; --muted: #9eaca4; --rule: #2f3833; --grid: #252c28;
+    --accent: #7cc4ad; --body1: #3987e5; --body2: #e0703f; --band: rgba(57, 135, 229, 0.18);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #131815; --surface: #1b211d; --fg: #e3eae5; --muted: #9eaca4; --rule: #2f3833; --grid: #252c28;
+  --accent: #7cc4ad; --body1: #3987e5; --body2: #e0703f; --band: rgba(57, 135, 229, 0.18);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 40px;
+}
+.wrap { max-width: 1080px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+h1 { font-size: 1.45rem; font-weight: 700; margin: 0; text-wrap: balance; letter-spacing: 0.01em; }
+.lead { margin: 4px 0 0; color: var(--muted); max-width: 68ch; }
+.eq { font-family: var(--font-mono); font-size: 0.92em; color: var(--fg); white-space: nowrap; }
+.panel { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 16px; min-width: 0; }
+.controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px 22px; align-items: start; }
+.ctl { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.ctl label { font-size: 0.85rem; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+.ctl output { font-family: var(--font-mono); color: var(--fg); font-variant-numeric: tabular-nums; }
+input[type="range"] { width: 100%; accent-color: var(--accent); }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+button {
+  font: inherit; font-size: 0.88rem; padding: 6px 12px; border-radius: 6px; cursor: pointer;
+  border: 1px solid var(--rule); background: var(--bg); color: var(--fg);
+}
+button:hover { border-color: var(--accent); }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--surface); font-weight: 500; }
+.chk { display: flex; gap: 6px; align-items: center; font-size: 0.85rem; color: var(--muted); }
+.views { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr); gap: 18px; }
+@media (max-width: 720px) { .views { grid-template-columns: minmax(0, 1fr); } }
+.view-title { font-size: 0.9rem; font-weight: 500; margin: 0 0 6px; }
+.view-note { font-size: 0.8rem; color: var(--muted); margin: 6px 0 0; }
+canvas { display: block; width: 100%; max-width: 100%; }
+#circle { aspect-ratio: 1 / 1; max-width: 360px; margin: 0 auto; }
+#flow { aspect-ratio: 16 / 10; }
+#strips { aspect-ratio: 16 / 6; }
+@media (max-width: 720px) { #strips { aspect-ratio: 16 / 9; } }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 6px 18px; margin-top: 8px; }
+.stat { display: flex; flex-direction: column; }
+.stat span { font-size: 0.78rem; color: var(--muted); }
+.stat b { font-family: var(--font-mono); font-weight: 500; font-variant-numeric: tabular-nums; }
+.legend { display: flex; gap: 16px; font-size: 0.82rem; color: var(--muted); justify-content: center; margin-top: 6px; }
+.dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
+.foot { font-size: 0.8rem; color: var(--muted); max-width: 80ch; }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>二つのリズム</h1>
+    <p class="lead">二人の身体の位相 θ₁, θ₂ が、互いに少しずつ合わせ合います。ずれ φ = θ₁ − θ₂ は
+      <span class="eq">dφ/dt = Δω − K sin φ</span> に従います。Δω を動かして、揃う・境目のすぐ外・遠く外を見比べてください。</p>
+  </header>
+
+  <section class="panel" aria-label="つまみ">
+    <div class="controls">
+      <div class="ctl">
+        <label for="dw">リズムの差 Δω / K <output id="dwOut"></output></label>
+        <input id="dw" type="range" min="0" max="2.5" step="0.005" value="1.01">
+      </div>
+      <div class="ctl">
+        <label for="k">合わせる強さ K <output id="kOut"></output></label>
+        <input id="k" type="range" min="0.2" max="2" step="0.05" value="1">
+      </div>
+      <div class="ctl">
+        <label for="noise">雑音 D（log₁₀） <output id="noiseOut"></output></label>
+        <input id="noise" type="range" min="-4" max="-0.5" step="0.1" value="-2.5">
+        <span class="chk"><input id="noiseOn" type="checkbox"><label for="noiseOn">雑音を入れる（各身体に独立、分散 2D·dt）</label></span>
+      </div>
+      <div class="ctl">
+        <label for="speed">速さ（1 秒あたりの模型の時間） <output id="speedOut"></output></label>
+        <input id="speed" type="range" min="0" max="1.7" step="0.05" value="1">
+      </div>
+    </div>
+    <div class="row" style="margin-top: 12px;">
+      <button id="play" class="primary" type="button">一時停止</button>
+      <button id="reset" type="button">はじめから</button>
+      <span style="color: var(--muted); font-size: 0.85rem; margin-left: 6px;">例：</span>
+      <button type="button" data-preset="0.5">揃う（0.5）</button>
+      <button type="button" data-preset="1.01">境目のすぐ外（1.01）</button>
+      <button type="button" data-preset="2">遠く外（2）</button>
+    </div>
+  </section>
+
+  <div class="views">
+    <section class="panel" aria-label="円の上の二人">
+      <p class="view-title">円の上の二人（左回り）</p>
+      <canvas id="circle" role="img" aria-label="円の上を回る二つの点"></canvas>
+      <div class="legend"><span><i class="dot" style="background: var(--body1)"></i>身体1</span><span><i class="dot" style="background: var(--body2)"></i>身体2</span><span>灰色の弧：ずれ</span></div>
+      <div class="stats">
+        <div class="stat"><span>時間 t</span><b id="tOut">0</b></div>
+        <div class="stat"><span>身体1が追い越した回数</span><b id="lapOut">0</b></div>
+        <div class="stat"><span>平均のずれの速さ（直近 100）</span><b id="rateOut">–</b></div>
+      </div>
+    </section>
+    <section class="panel" aria-label="流れの図">
+      <p class="view-title">流れの図：ずれ φ のときの、ずれの速さ</p>
+      <canvas id="flow" role="img" aria-label="ずれ φ に対するずれの速さの曲線と、いまの位置"></canvas>
+      <p class="view-note" style="margin-top: 10px;">青い点がいまの位置。線より上なら φ は右へ、下なら左へ動きます。黒丸は戻ってくる止まる点、白丸は離れていく止まる点（|Δω| ≤ K のときだけ現れます）。</p>
+    </section>
+  </div>
+
+  <section class="panel" aria-label="時間の記録">
+    <p class="view-title">直近 120 の時間の記録</p>
+    <canvas id="strips" role="img" aria-label="ずれの累計とずれの速さの時系列"></canvas>
+    <p class="view-note">上：ずれの累計 φ/2π（何周ずれたか。左端からの増え方）。下：ずれの速さ dφ/dt。淡い帯は |dφ/dt| &lt; 0.1 K の目安です。</p>
+  </section>
+
+  <p class="foot">二人の式：θ̇₁ = ω₁ − (K/2) sin(θ₁ − θ₂)、θ̇₂ = ω₂ + (K/2) sin(θ₁ − θ₂)、ω₁,₂ = ω̄ ± Δω/2、ω̄ = 1.5。積分はルンゲ＝クッタ四次（刻み 0.01）、雑音はその後に足します。
+    sync-lab の位相の模型、段階0（phase/rhythm.py と同じ式）。</p>
+</div>
+
+<script>
+(() => {
+  const OMEGA_MEAN = 1.5, DT = 0.01, REC_DT = 0.05, WINDOW = 120, RATE_WIN = 100, NEAR = 0.1;
+  const $ = (id) => document.getElementById(id);
+  const ui = { dw: $("dw"), k: $("k"), noise: $("noise"), noiseOn: $("noiseOn"), speed: $("speed") };
+
+  let th1, th2, t, phi0, hist, lastRec, playing = true, lastTs = null;
+
+  function params() {
+    const K = +ui.k.value, dw = +ui.dw.value * K;
+    return { K, dw, w1: OMEGA_MEAN + dw / 2, w2: OMEGA_MEAN - dw / 2,
+             D: ui.noiseOn.checked ? Math.pow(10, +ui.noise.value) : 0 };
+  }
+  function vel(a, b, p) {
+    const s = Math.sin(a - b);
+    return [p.w1 - 0.5 * p.K * s, p.w2 + 0.5 * p.K * s];
+  }
+  function gauss() {
+    let u = 0, v = 0;
+    while (u === 0) u = Math.random();
+    while (v === 0) v = Math.random();
+    return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+  }
+  function step(p) {
+    const [a1, a2] = vel(th1, th2, p);
+    const [b1, b2] = vel(th1 + 0.5 * DT * a1, th2 + 0.5 * DT * a2, p);
+    const [c1, c2] = vel(th1 + 0.5 * DT * b1, th2 + 0.5 * DT * b2, p);
+    const [d1, d2] = vel(th1 + DT * c1, th2 + DT * c2, p);
+    th1 += DT / 6 * (a1 + 2 * b1 + 2 * c1 + d1);
+    th2 += DT / 6 * (a2 + 2 * b2 + 2 * c2 + d2);
+    if (p.D > 0) {
+      const sd = Math.sqrt(2 * p.D * DT);
+      th1 += sd * gauss();
+      th2 += sd * gauss();
+    }
+    t += DT;
+    if (t - lastRec >= REC_DT - 1e-9) {
+      const phi = th1 - th2;
+      hist.push({ t, phi, rate: p.dw - p.K * Math.sin(phi) });
+      lastRec = t;
+      while (hist.length && hist[0].t < t - Math.max(WINDOW, RATE_WIN) - 1) hist.shift();
+    }
+  }
+  function reset() {
+    th1 = 0; th2 = 0; t = 0; lastRec = 0; phi0 = 0;
+    const p = params();
+    hist = [{ t: 0, phi: 0, rate: p.dw }];
+  }
+  function advance(modelTime, cap = Infinity) {
+    const p = params();
+    const n = Math.min(cap, Math.round(modelTime / DT));
+    for (let i = 0; i < n; i++) step(p);
+  }
+
+  // ---- drawing
+  let C = {};
+  function readColors() {
+    const cs = getComputedStyle(document.documentElement);
+    for (const k of ["fg", "muted", "rule", "grid", "body1", "body2", "band", "surface"]) C[k] = cs.getPropertyValue("--" + k).trim();
+    C.font = cs.getPropertyValue("--font-mono").trim();
+  }
+  function prep(cv) {
+    const dpr = window.devicePixelRatio || 1, r = cv.getBoundingClientRect();
+    const w = Math.max(10, Math.round(r.width)), h = Math.max(10, Math.round(r.height));
+    if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) {
+      cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+    }
+    const g = cv.getContext("2d");
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.clearRect(0, 0, w, h);
+    return [g, w, h];
+  }
+  const wrapPi = (x) => Math.atan2(Math.sin(x), Math.cos(x));
+
+  function drawCircle() {
+    const [g, w, h] = prep($("circle"));
+    const cx = w / 2, cy = h / 2, R = Math.min(w, h) * 0.36;
+    g.lineWidth = 2; g.strokeStyle = C.rule;
+    g.beginPath(); g.arc(cx, cy, R, 0, 2 * Math.PI); g.stroke();
+    const d = wrapPi(th1 - th2);
+    g.lineWidth = 7; g.strokeStyle = C.muted; g.globalAlpha = 0.35; g.lineCap = "butt";
+    g.beginPath();
+    // canvas angles run clockwise; draw counter-clockwise rotation by negating
+    const a2 = -th2, a1 = -(th2 + d);
+    g.arc(cx, cy, R * 1.14, a2, a1, d > 0);
+    g.stroke(); g.globalAlpha = 1;
+    for (const [th, col] of [[th2, C.body2], [th1, C.body1]]) {
+      const x = cx + R * Math.cos(th), y = cy - R * Math.sin(th);
+      g.strokeStyle = col; g.lineWidth = 1.4;
+      g.beginPath(); g.moveTo(cx, cy); g.lineTo(x, y); g.stroke();
+      g.fillStyle = col; g.beginPath(); g.arc(x, y, Math.max(7, R * 0.09), 0, 2 * Math.PI); g.fill();
+    }
+  }
+
+  function drawFlow() {
+    const [g, w, h] = prep($("flow"));
+    const p = params();
+    const L = 58, Rm = 12, T = 10, B = 30;
+    const yLo = Math.min(p.dw - p.K, 0) - 0.25 * p.K, yHi = Math.max(p.dw + p.K, 0) + 0.25 * p.K;
+    const X = (x) => L + (w - L - Rm) * x / (2 * Math.PI);
+    const Y = (y) => T + (h - T - B) * (yHi - y) / (yHi - yLo);
+    g.font = `11px ${C.font}`; g.fillStyle = C.muted; g.textAlign = "center"; g.textBaseline = "top";
+    const labs = ["0", "π/2", "π", "3π/2", "2π"];
+    for (let i = 0; i <= 4; i++) {
+      const x = X(i * Math.PI / 2);
+      g.strokeStyle = C.grid; g.lineWidth = 1; g.beginPath(); g.moveTo(x, T); g.lineTo(x, h - B); g.stroke();
+      g.fillText(labs[i], x, h - B + 6);
+    }
+    g.textAlign = "right"; g.textBaseline = "middle";
+    const span = yHi - yLo, stepY = span > 3 ? 1 : span > 1.5 ? 0.5 : 0.25;
+    for (let y = Math.ceil(yLo / stepY) * stepY; y <= yHi + 1e-9; y += stepY) {
+      g.strokeStyle = C.grid; g.beginPath(); g.moveTo(L, Y(y)); g.lineTo(w - Rm, Y(y)); g.stroke();
+      g.fillText((Math.abs(y) < 1e-9 ? 0 : y).toFixed(stepY < 0.5 ? 2 : 1), L - 6, Y(y));
+    }
+    g.strokeStyle = C.muted; g.lineWidth = 1.2; g.beginPath(); g.moveTo(L, Y(0)); g.lineTo(w - Rm, Y(0)); g.stroke();
+    g.strokeStyle = C.fg; g.lineWidth = 2; g.beginPath();
+    for (let i = 0; i <= 300; i++) {
+      const x = 2 * Math.PI * i / 300, y = p.dw - p.K * Math.sin(x);
+      i ? g.lineTo(X(x), Y(y)) : g.moveTo(X(x), Y(y));
+    }
+    g.stroke();
+    if (Math.abs(p.dw) <= p.K) {
+      const s = Math.asin(p.dw / p.K);
+      g.fillStyle = C.fg; g.beginPath(); g.arc(X(s), Y(0), 6, 0, 2 * Math.PI); g.fill();
+      g.fillStyle = C.surface; g.strokeStyle = C.fg; g.lineWidth = 1.8;
+      g.beginPath(); g.arc(X(Math.PI - s), Y(0), 6, 0, 2 * Math.PI); g.fill(); g.stroke();
+    }
+    const n = hist.length;
+    for (let i = Math.max(0, n - 40); i < n; i++) {
+      const e = hist[i], x = ((e.phi % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+      g.globalAlpha = (i - (n - 40)) / 40 * 0.5;
+      g.fillStyle = C.body1; g.beginPath(); g.arc(X(x), Y(p.dw - p.K * Math.sin(x)), 3, 0, 2 * Math.PI); g.fill();
+    }
+    g.globalAlpha = 1;
+    const x = (((th1 - th2) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+    g.fillStyle = C.body1; g.beginPath(); g.arc(X(x), Y(p.dw - p.K * Math.sin(x)), 7, 0, 2 * Math.PI); g.fill();
+    g.save(); g.translate(4, T + (h - T - B) / 2); g.rotate(-Math.PI / 2);
+    g.textAlign = "center"; g.textBaseline = "top"; g.fillStyle = C.muted; g.fillText("dφ/dt", 0, 0); g.restore();
+  }
+
+  function drawStrips() {
+    const [g, w, h] = prep($("strips"));
+    const p = params();
+    const L = 44, Rm = 12, gap = 18, B = 22;
+    const H1 = (h - gap - B) * 0.45, H2 = (h - gap - B) * 0.55;
+    const t1 = t, t0 = Math.max(0, t - WINDOW);
+    const vis = hist.filter((e) => e.t >= t0 - 1e-9);
+    const X = (tt) => L + (w - L - Rm) * (tt - t0) / WINDOW;
+    g.font = `11px ${C.font}`;
+    // time ticks
+    g.fillStyle = C.muted; g.textAlign = "center"; g.textBaseline = "top";
+    for (let tt = Math.ceil(t0 / 20) * 20; tt <= t1 + 1e-9; tt += 20) {
+      g.strokeStyle = C.grid; g.lineWidth = 1; g.beginPath(); g.moveTo(X(tt), 0); g.lineTo(X(tt), h - B); g.stroke();
+      g.fillText(tt.toFixed(0), X(tt), h - B + 5);
+    }
+    if (!vis.length) return;
+    // strip 1: cumulative turns since window start
+    const base = vis[0].phi / (2 * Math.PI);
+    let top = 0;
+    for (const e of vis) top = Math.max(top, e.phi / (2 * Math.PI) - base);
+    top = Math.max(1, Math.ceil(top));
+    const Y1 = (y) => H1 - 4 - (H1 - 8) * y / top;
+    g.textAlign = "right"; g.textBaseline = "middle"; g.fillStyle = C.muted;
+    const s1 = top <= 4 ? 1 : top <= 20 ? 5 : 10;
+    for (let y = 0; y <= top; y += s1) {
+      g.strokeStyle = C.grid; g.beginPath(); g.moveTo(L, Y1(y)); g.lineTo(w - Rm, Y1(y)); g.stroke();
+      g.fillText(String(y), L - 6, Y1(y));
+    }
+    g.strokeStyle = C.fg; g.lineWidth = 1.8; g.beginPath();
+    vis.forEach((e, i) => { const y = Y1(e.phi / (2 * Math.PI) - base); i ? g.lineTo(X(e.t), y) : g.moveTo(X(e.t), y); });
+    g.stroke();
+    // strip 2: rate
+    const o = H1 + gap;
+    const lo = Math.min(-0.3 * p.K, p.dw - p.K - 0.1), hi = Math.max(0.6 * p.K, p.dw + p.K + 0.1);
+    const Y2 = (y) => o + (H2 - 4) * (hi - y) / (hi - lo);
+    g.fillStyle = C.band; g.fillRect(L, Y2(NEAR * p.K), w - L - Rm, Y2(-NEAR * p.K) - Y2(NEAR * p.K));
+    g.strokeStyle = C.muted; g.lineWidth = 1; g.beginPath(); g.moveTo(L, Y2(0)); g.lineTo(w - Rm, Y2(0)); g.stroke();
+    g.fillStyle = C.muted;
+    for (const y of [0, Math.round(hi * 2) / 2]) g.fillText(y.toFixed(1), L - 6, Y2(y));
+    g.strokeStyle = C.fg; g.lineWidth = 1.5; g.beginPath();
+    vis.forEach((e, i) => { const y = Y2(e.rate); i ? g.lineTo(X(e.t), y) : g.moveTo(X(e.t), y); });
+    g.stroke();
+  }
+
+  function drawStats() {
+    $("tOut").textContent = t.toFixed(1);
+    $("lapOut").textContent = String(Math.floor((th1 - th2 + Math.PI) / (2 * Math.PI)));
+    const old = hist.find((e) => e.t >= t - RATE_WIN - 1e-9);
+    $("rateOut").textContent = t >= RATE_WIN && old ? ((th1 - th2 - old.phi) / (t - old.t)).toFixed(3) : "（t ≥ 100 で表示）";
+  }
+  function drawAll() { drawCircle(); drawFlow(); drawStrips(); drawStats(); }
+
+  function syncOutputs() {
+    $("dwOut").textContent = (+ui.dw.value).toFixed(3);
+    $("kOut").textContent = (+ui.k.value).toFixed(2);
+    $("noiseOut").textContent = ui.noiseOn.checked ? `D = ${Math.pow(10, +ui.noise.value).toExponential(1)}` : "なし";
+    $("speedOut").textContent = Math.pow(10, +ui.speed.value).toFixed(1);
+  }
+
+  function frame(ts) {
+    if (playing) {
+      const dtReal = lastTs === null ? 0 : Math.min(0.1, (ts - lastTs) / 1000);
+      advance(dtReal * Math.pow(10, +ui.speed.value), 4000);
+    }
+    lastTs = ts;
+    drawAll();
+    requestAnimationFrame(frame);
+  }
+
+  for (const el of Object.values(ui)) el.addEventListener("input", () => { syncOutputs(); if (!playing) drawAll(); });
+  $("play").addEventListener("click", () => {
+    playing = !playing;
+    $("play").textContent = playing ? "一時停止" : "再生";
+  });
+  $("reset").addEventListener("click", () => { reset(); advance(0); drawAll(); });
+  document.querySelectorAll("[data-preset]").forEach((b) => b.addEventListener("click", () => {
+    ui.dw.value = b.dataset.preset; syncOutputs(); reset(); advance(60); drawAll();
+  }));
+  const mq = window.matchMedia("(prefers-color-scheme: dark)");
+  (mq.addEventListener ? mq.addEventListener("change", () => { readColors(); drawAll(); }) : null);
+  new MutationObserver(() => { readColors(); drawAll(); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  window.addEventListener("resize", drawAll);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { readColors(); drawAll(); });
+
+  // Open in a working state: the "just outside the boundary" example, already run for 90 time units.
+  readColors(); syncOutputs(); reset(); advance(90);
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { playing = false; $("play").textContent = "再生"; }
+  drawAll();
+  requestAnimationFrame(frame);
+})();
+</script>

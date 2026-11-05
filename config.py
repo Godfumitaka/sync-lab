@@ -253,3 +253,30 @@ U5_SELFTEST_SEED = 599
 # 単元五：設定を目で見る図（show_setup.py）。学習は走らせない
 U5_SHOW_T = 100               # 見せるステップ数
 U5_SHOW_SEED = 503
+
+# ---- 位相の模型（briefs/2026-11-05.md）。コードは phase/ ----
+# 論文外・原文外の選択はすべて phase/ASSUMPTIONS.md。
+# 図の日本語の字体：上から順に、入っているものを使う（Mac では Hiragino Sans、Linux では IPAGothic など）
+PH_FONTS = ["Hiragino Sans", "Hiragino Kaku Gothic ProN", "IPAGothic", "Noto Sans CJK JP", "Yu Gothic"]
+PH_COLOR_BODY1 = "#2a78d6"    # 身体1（図とアニメーションで共通）
+PH_COLOR_BODY2 = "#eb6834"    # 身体2
+
+# 段階0：二つのリズム（アドラー方程式 dφ/dt = Δω − K sin φ）。phase/rhythm.py、phase/run_stage0.py
+# 二人の式は θ̇₁ = ω₁ − (K/2) sin(θ₁ − θ₂)、θ̇₂ = ω₂ + (K/2) sin(θ₁ − θ₂)。
+# ここの K は「ずれ φ の式の係数」で、単元一の a と同じ、単元三の K の 2 倍（単元三は一人あたりの結合を K と書いた）
+PH0_K = 1.0                   # 合わせる強さ K
+PH0_OMEGA_MEAN = 1.5          # 二人のリズムの平均 ω̄（ω₁ = ω̄ + Δω/2、ω₂ = ω̄ − Δω/2）。掃引の端 Δω = 2.5 でも ω₂ > 0（二人とも前へ回る）
+PH0_CASES = [0.5, 1.01, 2.0]  # 三つの例の Δω（K = 1 で：揃う／境目のすぐ外／遠く外）
+PH0_PHI0 = 0.0                # 最初のずれ φ(0)（θ₁(0) = φ0/2、θ₂(0) = −φ0/2）
+PH0_T = 100.0                 # 三つの例を走らせる時間
+PH0_DT = 0.01                 # 積分の刻み（ルンゲ＝クッタ四次）
+PH0_SWEEP_MIN = 0.0           # Δω/K の掃引の範囲
+PH0_SWEEP_MAX = 2.5
+PH0_SWEEP_N = 251
+PH0_SWEEP_T = 4000.0          # 掃引で一つの Δω を走らせる時間
+PH0_SWEEP_SKIP = 500.0        # そのうち、はじめの過渡として捨てる時間
+PH0_NEAR_LOCK = 0.1           # 図の帯「ほぼ揃っている」：|dφ/dt| < この値 × K（見せるための目安で、測る量には使わない。根拠なし）
+PH0_ANIM_T = 95.0             # アニメーションの長さ（模型の時間）。境目のすぐ外の例で二回滑るまで
+PH0_ANIM_FRAME_DT = 0.3       # 一コマで進める模型の時間
+PH0_ANIM_FPS = 15
+PH0_ANIM_DPI = 72
